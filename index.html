@@ -1,0 +1,666 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>reveal.js</title>
+
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/black.css">
+
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/monokai.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section data-background-transition="zoom">
+				<h2>Реактивное програмирование</h2>
+				<h4>На примере rx.js</h4>
+			</section>
+			<section data-background="#4d7e65" data-background-transition="zoom">
+				<h2>План</h2>
+				<ol>
+					<li>Что это такое</li>
+					<li>История</li>
+					<li>Главные патерны</li>
+					<li>Как создать поток</li>
+					<li>Операторы</li>
+					<li>Операторы HOO</li>
+					<li>Обработка ошибок</li>
+					<li>Типы Subject</li>
+					<li>Пример</li>
+					<li>Полезные ссылки</li>
+				</ol>
+			</section>
+
+			<section data-transition="slide" data-background="#4d7e65" data-background-transition="zoom">
+				<section>
+					<h2>Что это такое</h2>
+				</section>
+				<section>
+					<h5>Реактивное программирование — парадигма программирования, ориентированная на потоки данных и
+						распространение изменений</h5>
+				</section>
+				<section>
+					<h5>Способность реагировать на какие-либо изменения</h5>
+				</section>
+			</section>
+			<section data-background="#b5533c" data-background-transition="zoom">
+				<section id="fragments">
+					<h2>История</h2>
+					<p>1973 - Первое упоминание акторов есть в научной работе — Carl Hewitt, Peter
+					</p>
+					<p class="fragment">
+						1986 — появился Erlang.
+					</p>
+					<p class="fragment">
+						2004 — первая версия языка Scala
+					</p>
+					<p class="fragment">
+						2009 — реализация акторов выделилась в отдельную библиотеку — Akka
+					</p>
+					<p class="fragment">
+						2014 — Akka.net — её портировали на .Net.
+					</p>
+					<p class="fragment">
+						2015 - RxJS
+					</p>
+					<aside class="notes">
+						This slide has fragments which are also stepped through in the notes window.
+					</aside>
+				</section>
+			</section>
+			<section data-transition="slide" data-background="#b5533c" data-background-transition="zoom">
+				<section>
+					<h2>
+						Основные патерны
+					</h2>
+				</section>
+				<section>
+					<h3>
+						Observable & Subscription
+					</h3>
+				</section>
+				<section>
+					<p>
+						Observable – асинхронный паттерн проектирования, в котором данные представлены в виде потока
+						событий. Потоки можно «переиспользовать» – комбинировать, фильтровать, подобно массивам,
+						используя специальные методы – операторы.
+					</p>
+				</section>
+				<section>
+					<h3>Что может быть потоком?</h3>
+					<ul>
+						<li>UI events</li>
+						<li>Requests</li>
+						<li>Array</li>
+						<li>Set</li>
+						<li>Map</li>
+						<li>String</li>
+						<li>
+							<h4>Everything</h4>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Этапы жизни Observable</h3>
+					<ol>
+						<li>Создание</li>
+						<li>Подписка</li>
+						<li>Отписка</li>
+					</ol>
+				</section>
+				<section>
+					<p>
+						Потоки являются “ленивыми” объектами и ничего сами по себе не делают. Для того, чтобы наш поток
+						начал испускать значения и мы могли бы эти значения обрабатывать, нам необходимо начать
+						“слушать” поток. Сделать это можно, вызвав метод <b>subscribe</b> у объекта observable
+					</p>
+				</section>
+				<section>
+					<h3>Когда использовать?</h3>
+					<ul>
+						<li>Много данных</li>
+						<li>Больше одного асинхроного вычесления</li>
+						<li>Больше одного события</li>
+						<li>При использовании Flux архитектуры</li>
+					</ul>
+				</section>
+			</section>
+			<section data-transition="slide" data-background="#4d7e65" data-background-transition="zoom">
+				<section>
+					<h2>Как создать поток?</h2>
+				</section>
+				<section>
+					<h3>new</h3>
+					<div>
+						<pre>
+							<code class="hljs" data-trim data-line-numbers>
+														const observable = new Observable(observer => {
+															observer.next(1);
+															observer.next(2);
+															observer.complete();
+														   })								   
+							</code>
+						</pre>
+					</div>
+					<div style="text-align: left;">
+						<small>Наблюдатель(observer) - объект, у которого есть три метода:</small>
+						<small>next — выбрасывает новое значение в поток</small>
+						<small>error — выбрасывает в поток ошибку, после чего поток завершается</small>
+						<small>complete — завершает поток</small>
+						<small>Таким образом, мы создали поток, который испускает два значения и завершается.</small>
+					</div>
+				</section>
+
+				<section>
+					<h3>Оператор of()</h3>
+					<small>of - создаем Observable на основе простого значения.</small>
+					<div>
+						<pre>
+									<code class="hljs" data-trim data-line-numbers>
+											const observable = of(10, 20, 30);
+											observable.subscribe(res => console.log('createByOf', res));
+											// 10
+											// 20
+											// 30
+									</code>
+							</pre>
+					</div>
+				</section>
+
+				<section>
+					<h3>Оператор from()</h3>
+					<small>Превращает любую итерируемую сущность в поток, строка, массив, промис</small>
+					<div>
+						<pre>
+								<code class="hljs" data-trim data-line-numbers>
+									const observableFromString = from('abcd');
+									observableFromString.subscribe(res => console.log(res));	
+									// a
+									// b	
+									// c	
+									// d	
+									const observableFromArray = from(['String 1', 'String 2', 'String 3']);
+									observableFromArray.subscribe(res => console.log(res));		
+									// String 1	
+									// String 2	
+									// String 3	
+									const promise = new Promise((resolve, reject) => {
+										resolve('i am from promise');
+									  });	
+									const observableFromArray = from(promise);
+									observableFromArray.subscribe(res => console.log(res));	  
+									//  'i am from promise'
+								</code>
+							</pre>
+					</div>
+				</section>
+				<section>
+					<h3>Оператор fromEvent()</h3>
+					<small>fromEvent - первым параметром указываем объект, на котором слушаем событие; 2-м само
+						событие.</small>
+					<div>
+						<pre>
+							<code class="hljs" data-trim data-line-numbers>
+									fromEvent(this.clickButton.nativeElement, 'click');
+							</code>
+						</pre>
+					</div>
+				</section>
+			</section>
+			<section data-transition="slide" data-background="#b5533c" data-background-transition="zoom">
+				<section>
+					<h2>Операторы</h2>
+					<small>120++</small>
+				</section>
+				<section>
+					<img src="assets/operators_1.png" style="width: 500px;" alt="">
+				</section>
+				<section>
+					<img src="assets/operators_2.png" style="width: 500px;" alt="">
+				</section>
+				<section>
+					<h3>Популярные операторы</h3>
+					<ul>
+						<li>from()</li>
+						<li>fromEvent()</li>
+						<li>map()</li>
+						<li>filter()</li>
+						<li>take()</li>
+						<li>scan()</li>
+						<li>delay()</li>
+						<li>debounceTime()</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Оператор map()</h3>
+					<small>map - работает аналогично нативному методу map: пробегается по массиву и формируем новый
+						массиив, преобразуя значения.
+					</small>
+					<div>
+						<pre>
+								<code class="hljs" data-trim data-line-numbers>
+										const timer = interval(500);
+										timer.pipe(
+										  map(item => item * 3)
+										).subscribe(res => console.log(res));
+								</code>
+							</pre>
+					</div>
+					<div>
+						<img src="assets/map.png" alt="" style="width: 80%;">
+					</div>
+				</section>
+				<section>
+					<h3>Оператор filter()</h3>
+					<small>filter - работает аналогично нативному методу filter: пробегается по массиву и формируем
+						новый
+						массиив, согласно фильтру.
+					</small>
+					<div>
+						<pre>
+									<code class="hljs" data-trim data-line-numbers>
+											const timer = interval(500);
+											timer.pipe(
+												filter(value => value % 2 === 0)
+											).subscribe(res => console.log(res));
+									</code>
+								</pre>
+					</div>
+					<div>
+						<img src="assets/filter.png" alt="" style="width: 80%;">
+					</div>
+				</section>
+				<section>
+					<h3>Оператор take()</h3>
+					<small>take - задаем кол-во элементов, которые мы хотим взять.
+					</small>
+					<div>
+						<pre>
+										<code class="hljs" data-trim data-line-numbers>
+												const timer = interval(4);
+												timer.pipe(
+													take(2)
+												).subscribe(res => console.log(res));
+										</code>
+									</pre>
+					</div>
+					<div>
+						<img src="assets/take.png" alt="" style="width: 80%;">
+					</div>
+				</section>
+				<section>
+					<h3>Оператор delay()</h3>
+					<small>delay - задает задержку;
+					</small>
+					<div>
+						<pre>
+											<code class="hljs" data-trim data-line-numbers>
+													const timer = interval(4);
+													timer.pipe(
+														delay(2)
+													).subscribe(res => console.log(res));
+											</code>
+										</pre>
+					</div>
+					<div>
+						<img src="assets/delay.png" alt="" style="width: 80%;">
+					</div>
+				</section>
+
+				<section>
+					<h3>Оператор debounceTime()</h3>
+					<small>debounceTime - Добавляет задержку перед обработкой запросов;
+					</small>
+					<div>
+						<pre>
+							<code class="hljs" data-trim data-line-numbers>
+														const timer = interval(4);
+														timer.pipe(
+															debounceTime(10)
+														).subscribe(res => console.log(res));
+							</code>
+						</pre>
+					</div>
+					<div>
+						<img src="assets/debounceTime.png" alt="" style="width: 80%;">
+					</div>
+				</section>
+			</section>
+			<section data-transition="slide" data-background="#4d7e65" data-background-transition="zoom">
+				<section>
+					<h2>Операторы HOO</h2>
+				</section>
+				<section>
+					<h3>
+						Observable высших порядков это означает, что у Observable элементом внутри является также
+						Observable
+					</h3>
+				</section>
+
+				<section>
+					<h3>Оператор mergeMap()</h3>
+					<small>Все Observable сливаются в одну последовательность (значения выстреливают по мере
+						поступления).
+					</small>
+					<div>
+						<pre>
+							<code class="hljs" data-trim data-line-numbers>
+								timer(0, 1000).pipe(
+									mergeMap(() => this.fakeRequest())
+									).subscribe(res => console.log('mergeMap', res));
+							</code>
+						</pre>
+					</div>
+				</section>
+
+				<section>
+					<h5>Оператор switchMap()</h5>
+					<small>Предыдущая внутренняя последовательность останавливается (complete) и стартует новая
+						последовательность.
+					</small>
+					<div>
+						<pre>
+								<code class="hljs" data-trim data-line-numbers>
+										const firstObservable = timer(1000).pipe(mapTo(1));
+										const secondObservable = timer(500).pipe(mapTo(2));
+										const thirdObservable = timer(500).pipe(mapTo(3));
+										  of(firstObservable,secondObservable).pipe(
+											switchMap(() => thirdObservable)
+										  ).subscribe(res => console.log('switchMap', res)); //3
+								</code>
+							</pre>
+					</div>
+				</section>
+
+				<section>
+					<h3>Обработка ошибок</h3>
+				</section>
+
+				<section>
+					<h5>Оператор retry()</h5>
+					<small>retry - повторяет последовательность Observable n раз, пока не будет ошибок. Параметром
+						принимает кол-во попыток на перезапуск (пока не будет ошибок).
+					</small>
+					<div>
+						<pre>
+									<code class="hljs" data-trim data-line-numbers>
+											const observable = interval(500)
+											.pipe(
+											  mergeMap((val) => {
+												if (val > 3) {
+												  return throwError('error > 3');
+												}
+												return of(val);
+											  }),
+											  retry(2)
+											);
+									  
+										  observable.subscribe(res => console.log('res', res),
+											err => console.log(err));
+									  
+									</code>
+								</pre>
+					</div>
+				</section>
+
+				<section>
+					<h5>Оператор retryWhen()</h5>
+					<small>retryWhen - параметром принимает Observable ошибки, на котором мы можем поставить какие-либо
+						условия, например, в нашем случае это задержка в 2 сек на перезапуск потока.
+					</small>
+					<div>
+						<pre>
+										<code class="hljs" data-trim data-line-numbers>
+												const observable = interval(500)
+												.pipe(
+												  mergeMap((val) => {
+													if (val > 3) {
+													  // генерируем Observable ошибки
+													  return throwError('error > 3');
+													}
+													return of(val);
+												  }),
+												  retryWhen((errorObservable) => {
+													return errorObservable.pipe(
+													  delay(2000)
+													)
+												  })
+												);
+											  observable.subscribe(res => console.log('retryWhen', res),
+												err => console.log(err));
+										</code>
+									</pre>
+					</div>
+				</section>
+			</section>
+			<section data-transition="slide" data-background="#b5533c" data-background-transition="zoom">
+				<section>
+					<h2>Subjects</h2>
+				</section>
+				<section>
+					<ol>
+						<li>Subject</li>
+						<li>AsyncSubject</li>
+						<li>BehaviorSubject</li>
+						<li>ReplaySubject</li>
+					</ol>
+				</section>
+				<section>
+					<h5>Subject</h5>
+					<small>Когда данные пушатся в «сабджект», он пробежится по всему списку подписок и передаст
+						полученные данные.
+					</small>
+					<div>
+						<pre>
+										<code class="hljs" data-trim data-line-numbers>
+												const subject = new Subject();
+												subject.next(1);
+												const subscription1 = subject.subscribe(x => {
+												  console.log('Subject 1:', x);
+												});
+												subject.next(2);
+												const subscription2 = subject.subscribe(x => {
+												  console.log('Subject 2:', x);
+												});
+												subject.next(3);
+												subscription1.unsubscribe();
+												subject.next(4);
+												//Subject 1: 2
+												//Subject 1: 3
+												//Subject 2: 3
+												//Subject 2: 4
+										</code>
+									</pre>
+					</div>
+				</section>
+
+				<section>
+					<img src="assets/subject.png" alt="">
+				</section>
+				<section>
+					<h5>AsyncSubject</h5>
+					<small>Асинхронный сабж уведомляет своих зрителей только о последнем произошедшем событии и только
+						когда сабж успешно завершается. Если асинхронный сабж завершится ошибкой, его зрители будут
+						уведомлены только об ошибке.
+					</small>
+					<div>
+						<pre>
+											<code class="hljs" data-trim data-line-numbers>
+													const subject = new AsyncSubject();
+													subject.subscribe(x => console.log(x));
+													subject.next(1);
+													subject.next(2);
+													subject.complete(); 
+													// 2
+											</code>
+										</pre>
+					</div>
+				</section>
+
+				<section>
+					<h5>ReplaySubject</h5>
+					<small>Теперь вернемся к ситуации, когда мы теряли данные, если они транслировались раньше
+						объявления подписки. Replay subject создан для решения таких проблем. Он может хранить последние
+						транслирующееся данные в буфере и отдавать их при новой подписке. Количество хранимых трансляций
+						можно указать в атрибуте функции.
+					</small>
+					<div>
+						<pre>
+							<code class="hljs" data-trim data-line-numbers>
+								const subject = new ReplaySubject(2);
+								subject.next(1);
+								const subscription1 = subject.subscribe(x => {
+								console.log('ReplaySubject 1:', x);
+								});
+								subject.next(2);
+								subject.next(3);
+								subject.next(4);
+
+								const subscription2 = subject.subscribe(x => {
+								console.log('ReplaySubject 2:', x);
+								});
+								subscription1.unsubscribe();
+								// ReplaySubject 1: 1
+								// ReplaySubject 1: 2
+								// ReplaySubject 1: 3
+								// ReplaySubject 1: 4
+								// ReplaySubject 2: 3
+								// ReplaySubject 2: 4
+												</code>
+											</pre>
+					</div>
+				</section>
+				<section>
+					<h5>BehaviorSubject</h5>
+					<small>Это такие же «сабджекты» как и replay, только в них нельзя выставить размер буфера. Он по
+						умолчанию всегда сохраняет данные последнего эмита.
+					</small>
+					<div>
+						<pre>
+								<code class="hljs" data-trim data-line-numbers>
+										const subject = new BehaviorSubject(2);
+										subject.next(1);
+										const subscription1 = subject.subscribe(x => {
+										  console.log('behaviorSubject 1:', x);
+										});
+										subject.next(2);
+										subject.next(3);
+										subject.next(4);
+									
+										const subscription2 = subject.subscribe(x => {
+										  console.log('behaviorSubject 2:', x);
+										});
+										subscription1.unsubscribe();
+									// BehaviorSubject 1: 1
+									// BehaviorSubject 1: 2
+									// BehaviorSubject 1: 3
+									// BehaviorSubject 1: 4
+									// BehaviorSubject 2: 4
+													</code>
+												</pre>
+					</div>
+				</section>
+			</section>
+			<section data-transition="slide" data-background="#4d7e65" data-background-transition="zoom">
+				<section>
+					<h2>Example</h2>
+				</section>
+				<section>
+					<pre>
+								<code class="hljs" data-trim data-line-numbers>
+					const dragMouseDownEvents$ = 
+						fromEvent(this.drag.nativeElement, 'mousedown');
+					const documentMouseMoveEvents$ = 
+						fromEvent(document, 'mousemove');
+					const documentMouseUpEvents$ = 
+						fromEvent(document, 'mouseup');
+
+					dragMouseDownEvents$.pipe(
+						switchMap(() => documentMouseMoveEvents$.pipe(
+							takeUntil(documentMouseUpEvents$)
+					))
+					).subscribe((e: any) => {
+					console.log(e);
+					});
+					</code>
+					</pre>
+				</section>
+				<section>
+					<pre>
+								<code class="hljs" data-trim data-line-numbers>
+										ngOnInit() {
+											fromEvent(this.input.nativeElement, 'input')
+											.pipe(
+											  map((event: any) => event.target.value),
+											  debounceTime(500),
+											  distinctUntilChanged(),
+											  tap(() => console.log('start animation')),
+											  switchMap((value) => this.getData(value)),
+											).subscribe(res => console.log(res));
+										  }
+										
+										  getData(text) {
+											return of(`success ${text}`);
+										  }
+					</code>
+					</pre>
+
+				</section>
+			</section>
+			<section data-transition="slide" data-background="#b5533c" data-background-transition="zoom">
+				<h3>Полезные ссылки</h3>
+				<ul>
+					<ol>
+						<a href="https://rxjs.dev">rxjs.dev</a>
+					</ol>
+					<ol>
+						<a
+							href="http://coldfox.ru/article/5beeefda9227d914a1c83fe5/RxJS-%D0%BF%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D0%B0">Описание
+							операторов</a>
+					</ol>
+					<ol>
+						<a
+							href="https://medium.com/@kosmogradsky/subject-%D0%B2-rxjs-%D0%BA%D1%80%D0%B0%D1%82%D0%BA%D0%BE%D0%B5-%D0%B2%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5-c9099231be6d">
+							Subjcets
+						</a>
+					</ol>
+				</ul>
+			</section>
+		</div>
+	</div>
+
+	<script src="js/reveal.js"></script>
+
+	<script>
+		// More info about config & dependencies:
+		// - https://github.com/hakimel/reveal.js#configuration
+		// - https://github.com/hakimel/reveal.js#dependencies
+		Reveal.initialize({
+			hash: true,
+			dependencies: [
+				{ src: 'plugin/markdown/marked.js' },
+				{ src: 'plugin/markdown/markdown.js' },
+				{ src: 'plugin/notes/notes.js', async: true },
+				{ src: 'plugin/highlight/highlight.js', async: true }
+			]
+		});
+	</script>
+</body>
+
+</html>

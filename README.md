@@ -1,6 +1,4 @@
-### Full setup
-
-Some reveal.js features, like external Markdown and speaker notes, require that presentations run from a local web server. The following instructions will set up such a server as well as all of the development tasks needed to make edits to the reveal.js source code.
+### How start presentation
 
 1. Install dependencies
    ```sh
@@ -18,5 +16,5 @@ Some reveal.js features, like external Markdown and speaker notes, require that 
 
 ### Code example
 
-All code from this presentation <http://localhost:8000>
+All code from this presentation <https://github.com/SorochanRoman/rxjs-code-example>
 

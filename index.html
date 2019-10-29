@@ -341,6 +341,57 @@
 						<img src="assets/debounceTime.png" alt="" style="width: 80%;">
 					</div>
 				</section>
+
+				<section>
+					<h3>Оператор merge()</h3>
+					<small>merge - превращает несколько Observables в один Observable. Выдает значения по мере
+						поступления в независимости от того в каком порядке они были;
+					</small>
+					<div>
+						<pre>
+							<code class="hljs" data-trim data-line-numbers>
+							merge(stream1, stream2).subscribe(res => res)
+							</code>
+						</pre>
+					</div>
+					<div>
+						<img src="assets/merge.png" alt="" style="width: 80%;">
+					</div>
+				</section>
+
+				<section>
+					<h3>Оператор combineLatest()</h3>
+					<small>combineLatest - когда любой Observable эмитит значение, эмитит последние значения от каждого
+						(в виде массива).
+					</small>
+					<div>
+						<pre>
+							<code class="hljs" data-trim data-line-numbers>
+								combineLatest(stream1, stream2).subscribe(res => res)
+							</code>
+						</pre>
+					</div>
+					<div>
+						<img src="assets/combineLatest.png" alt="" style="width: 80%;">
+					</div>
+				</section>
+
+				<section>
+					<h3>Оператор zip()</h3>
+					<small>zip - ждет значение из каждого потока и формирует группу (массив) на основе этих значений;
+						если значение не придет из какого-либо потока, то группа не будет сформирована
+					</small>
+					<div>
+						<pre>
+							<code class="hljs" data-trim data-line-numbers>
+								zip(stream1, stream2).subscribe(res => res)
+							</code>
+						</pre>
+					</div>
+					<div>
+						<img src="assets/zip.png" alt="" style="height: 250px;">
+					</div>
+				</section>
 			</section>
 			<section data-transition="slide" data-background="#4d7e65" data-background-transition="zoom">
 				<section>
@@ -393,6 +444,13 @@
 					</div>
 					<div>
 						<img src="assets/switchMap.png" alt="" style="height: 240px;">
+					</div>
+				</section>
+
+				<section>
+					<h5>Отличия switchMap() и mergeMap()</h5>
+					<div>
+						<img src="assets/switchmap-vs-mergeMap.png" alt="">
 					</div>
 				</section>
 
